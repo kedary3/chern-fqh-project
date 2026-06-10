@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fqh-chern"
+version = "0.1.0"
+description = "Many-body Chern number calculations for fractional quantum Hall-like lattice systems."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Kedar Yadav" }
+]
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "matplotlib>=3.7",
+  "qutip>=5.0",
+  "oqupy>=0.5"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+quspin = ["quspin"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
