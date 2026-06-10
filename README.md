@@ -52,12 +52,15 @@ chern-fqh-project/
 │   ├── diagonalization.py
 │   ├── berry.py
 │   ├── observables.py
+│   ├── inverse_ehc.py
+│   ├── many_body.py
 │   ├── qutip_validation.py
 │   ├── oqupy_dynamics.py
 │   └── plotting.py
 ├── scripts/
 │   ├── run_spectrum.py
 │   ├── run_chern_scan.py
+│   ├── run_ehc_fci_discovery.py
 │   └── run_oqupy_noise_scan.py
 ├── notebooks/
 │   ├── 01_single_particle_hofstadter.ipynb
@@ -102,6 +105,40 @@ Run tests:
 ```bash
 pytest
 ```
+
+
+## Inverse-method Hamiltonian discovery
+
+The repository now includes an implementation of the Eigenstate-to-Hamiltonian Construction (EHC) inverse method from Chertkov and Clark, `arXiv:1802.01590`.  EHC starts from a target state `|psi_T>` and a chosen physically motivated operator library `{h_a}`.  It builds the quantum covariance matrix
+
+```text
+C_ab = <h_a h_b>_T - <h_a>_T <h_b>_T.
+```
+
+A null vector of this matrix gives coupling constants `J_a` for a Hamiltonian
+
+```text
+H = sum_a J_a h_a
+```
+
+for which the target state has zero energy variance and is therefore an eigenstate.  Small but nonzero QCM eigenvalues identify approximate parent-Hamiltonian candidates.  Because EHC guarantees eigenstate status rather than ground-state status, the script also checks the target state's overlap with the candidate Hamiltonian ground state and flips the overall Hamiltonian sign when that gives the target state as a lower-energy state.
+
+The main program for this workflow is:
+
+```bash
+python scripts/run_ehc_fci_discovery.py --Lx 4 --Ly 3 --N 2 --alpha 0.3333333333333333 --V 2.0 --library grouped --backend auto
+```
+
+`--backend auto` prefers QuSpin when available and falls back to the dense reference backend for small systems.  QuSpin is the natural library choice for this inverse-discovery stage because the calculation requires fixed-particle-number exact diagonalization and repeated construction of many-body lattice operators.
+
+Two operator libraries are currently available:
+
+```text
+grouped  : Hofstadter kinetic term, nearest-neighbor density repulsion, optional onsite densities.
+expanded : individual hopping bonds and individual density-density interactions.
+```
+
+The grouped library tests whether EHC can recover a compact FCI/Hofstadter parent Hamiltonian from its ground state.  The expanded library is more exploratory: it lets EHC search for alternative local Hamiltonians compatible with the same target state.
 
 ## Notes on library roles
 

@@ -12,3 +12,7 @@ __all__ = [
     "site_index",
     "coords_from_site",
 ]
+
+from .inverse_ehc import OperatorTerm, discover_hamiltonians, quantum_covariance_matrix
+
+__all__ = ["OperatorTerm", "discover_hamiltonians", "quantum_covariance_matrix"]
